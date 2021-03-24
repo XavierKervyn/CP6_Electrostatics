@@ -269,7 +269,7 @@ for i=1:nsimul
     divD   = data(:,4);
     
     err = abs((rholib-divD)/a0_) * 100;
-    plot(r(N1_(i)+2:end), err(N1_(i)+2:end),'.');
+    plot(r(N1_(i)+2:end-1), err(N1_(i)+2:end-1),'.');
     xlabel('$1/N$'); ylabel('Rel. err. on $\frac{1}{\varepsilon_0}|\rho_{lib} - \nabla \cdot D|$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
@@ -285,3 +285,4 @@ figure('Name',"plot rho lib")
     plot(r, rholib,'.','Linewidth',lw);
     xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
     grid minor; hold on; set(gca,'fontsize',fs);
+    
