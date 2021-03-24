@@ -226,9 +226,9 @@ int main(int argc, char* argv[])
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
     // en utilisant des diff�rences finies centr�es aux milieux des milieux des intervalles
-	div_Er[i] = 1.0 / rmidmid[i] * ( ( rmid[i+1] * Er[i+1] + rmid[i] * Er[i] ) / ( rmid[i+1] - rmid[i] ) );
-  //div_Dr[i] = 1.0 / rmidmid[i] * ( ( rmid[i+1] * Dr[i+1] + rmid[i] * Dr[i] ) / ( rmid[i+1] - rmid[i] ) );
-  div_Dr[i]= 1/rmidmid[i] * (Dr[i] + rmid[i]* (Dr[i+1]-Dr[i])/(r[i+1]-r[i])); 
+	div_Er[i] = 1.0 / rmidmid[i] * ( ( rmidmid[i+1] * Er[i+1] - rmidmid[i] * Er[i] ) / ( rmidmid[i+1] - rmidmid[i] ) );
+  div_Dr[i] = 1.0 / rmidmid[i] * ( ( rmidmid[i+1] * Dr[i+1] - rmidmid[i] * Dr[i] ) / ( rmidmid[i+1] - rmidmid[i] ) );
+  //div_Dr[i]= 1/rmidmid[i] * (Dr[i] + rmidmid[i]* (Dr[i+1]-Dr[i])/(rmidmid[i+1]-rmidmid[i]));
   }
   ofs.open(configFile.get<string>("outputDivergences").c_str());
   ofs.precision(15);
