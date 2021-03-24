@@ -73,7 +73,7 @@ end
 clear all; clc
 format long;
 
-nsimul = 10; N = round(logspace(5,6,nsimul));
+nsimul = 20; N = round(logspace(3,4,nsimul));
 trivial_    = false;
 if (trivial_)
     N1_ = N; N2_ = N;
@@ -148,12 +148,16 @@ figure('Name','plot E')
 %% Convergence de phi(r=b) pour différentes valeurs
 
 figure('Name',"Convergence phi r b")
-phirb = zeros(1,nsimul); %valeur de phi en r = b
+phirb  = zeros(1,nsimul); %valeur de phi en r = b
+rind   = zeros(1,nsimul); %valeur de r à l'indice trouvé
+ind    = zeros(1,nsimul); 
 for i=1:nsimul
     data = load([filename2(i)+'_phi.out']);
-    r   = data(:,1);
+    r    = data(:,1);
     [val,indice] = min(abs(r - b_));
-    phirb(i) = data(indice,2);
+    rind(i)   = r(indice);
+    phirb(i)  = data(indice,2);
+      ind(i)  =  indice;
 end
     loglog(N, phirb,'x','Markersize',ms,'HandleVisibility','off');
     xlabel('$N$'); ylabel('$\phi(r=b)$ [V]');
