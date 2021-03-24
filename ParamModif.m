@@ -36,8 +36,10 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6_KervynLeMeur configuration_.in');   
-    system('Exercice6_KervynLeMeur configuration_.in'); 
+%     disp('Exercice6_KervynLeMeur configuration_.in');   
+%     system('Exercice6_KervynLeMeur configuration_.in'); 
+    disp('Exercice6 configuration_.in');   
+    system('Exercice6 configuration_.in');
 end
 
 % disp('Exercice6_KervynLeMeur configuration.in');   
@@ -71,7 +73,7 @@ end
 clear all; clc
 format long;
 
-nsimul = 20; N = round(logspace(1,4,nsimul));
+nsimul = 10; N = round(logspace(5,6,nsimul));
 trivial_    = false;
 if (trivial_)
     N1_ = N; N2_ = N;
@@ -105,8 +107,10 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6_KervynLeMeur configuration_.in');   
-    system('Exercice6_KervynLeMeur configuration_.in'); 
+%     disp('Exercice6_KervynLeMeur configuration_.in');   
+%     system('Exercice6_KervynLeMeur configuration_.in'); 
+    disp('Exercice6 configuration_.in');   
+    system('Exercice6 configuration_.in'); 
 end
 
 % disp('Exercice6_KervynLeMeur configuration.in');   
@@ -149,8 +153,7 @@ for i=1:nsimul
     data = load([filename2(i)+'_phi.out']);
     r   = data(:,1);
     [val,indice] = min(abs(r - b_));
-    phi = data(:,2);
-    phirb(i) = phi(indice);
+    phirb(i) = data(indice,2);
 end
     loglog(N, phirb,'x','Markersize',ms,'HandleVisibility','off');
     xlabel('$N$'); ylabel('$\phi(r=b)$ [V]');
