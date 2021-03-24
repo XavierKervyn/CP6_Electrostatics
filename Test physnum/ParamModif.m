@@ -61,11 +61,11 @@ end
 
 
 %% Analyse de convergence sur phi_0
-phi_0 = (R_^2)/4 + V0_; %solution analytique
+phi_0 = (param2^2)/4 + param5; %solution analytique
 figure('Name',"Convergence phi_0")
 Errphi = zeros(1,nsimul);
 for i=1:nsimul
-    data = load([filename2(i)+'_phi.out']);
+    data = load([filename(i)+'_phi.out']);
     r = data(:,1);
     phi = data(:,2);
     Errphi(1,i) = abs(phi(1)-phi_0)/phi_0 *100;

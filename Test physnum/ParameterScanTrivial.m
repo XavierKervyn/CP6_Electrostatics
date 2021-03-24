@@ -3,29 +3,37 @@
 clear all; clc
 repertoire = '';                 % Chemin d'acces au code compile
 executable = 'Exercice6_KervynLeMeur';        % Nom de l'executable
-input      = 'configuration_.in'; % Nom du fichier d'entree
+input      = 'configuration.in'; % Nom du fichier d'entree
 
 format long;
 
 nsimul = 20; % Nombre de simulations a faire
 
 N       = round(logspace(1,4,nsimul));
-trivial_ = true;
+trivial = true;
 
-if (trivial_)
-    N1_ = N; N2_ = N;
+if (trivial)
+    N1 = N; N2 = N;
 else
-    N1_ = N; N2_ = 2*N;
+    N1 = N; N2 = 2*N;
 end
 
-b_  = 3.e-1 ;
-R_  = 5.e-1;
-a0_ = -3.e4;
-epsilon_r_ = 4.e0;
-V0_  = 2.2e2 ;
-MeshFactor_   = 0.5;
-p_  = 1.e0;
-propMesh_  = false;
+paramstr  = 'N1';               param     = N1;  
+paramstr0 = 'N2';               param0    = N2;
+paramstr1 = 'b';                param1    = 3.e-1 ;
+paramstr2 = 'R';                param2    = 5.e-1;
+paramstr3 = 'a0';               param3    = -3.e4;
+paramstr4 = 'epsilon_r';        param4    = 4.e0;
+paramstr5 = 'V0';               param5    = 2.2e2 ;
+paramstr6 = 'MeshFactor';       param6    = 0.5;
+paramstr7 = 'p';                param7    = 1.e0;
+paramstr8 = 'trivial';          param8    = trivial;
+paramstr9 = 'proportionalMesh'; param9    = false;
+
+filename  = "N1=" + num2str(param(1),8);
+for i = 2:nsimul
+    filename(i)="N1=" + num2str(param(i),8);
+end
 
 lw=1; fs = 18; ms = 7;
 set(groot, 'DefaultTextInterpreter', 'LaTeX');
@@ -35,37 +43,34 @@ set(groot, 'DefaultLegendInterpreter', 'LaTeX');
 set(groot, 'DefaultAxesBox', 'on');
 
 %% Simulations
-
-filename2  = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
-for i = 2:nsimul
-    filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
-end
-
+output = cell(4, nsimul);
+%name=['_dataprof' '_phi' '_E_D' '_div_E_D'];
 for i = 1:nsimul
-    N1_loc = N1_(i);
-    N2_loc = N2_(i);
-    writeConfig;
-    disp('Exercice6_KervynLeMeur configuration_.in');   
-    system('Exercice6_KervynLeMeur configuration_.in'); 
+    output{1,i} = [paramstr, '=', num2str(param(i),8), '_dataprof','.out'];
+    output{2,i} = [paramstr, '=', num2str(param(i),8), '_phi','.out'];
+    output{3,i} = [paramstr, '=', num2str(param(i),8), '_E_D','.out'];
+    output{4,i} = [paramstr, '=', num2str(param(i),8), '_div_E_D','.out'];
+    
+    % Variant to scan N1 and N2 together:
+    cmd=sprintf('%s%s %s %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g %s=%.15g outputDataProfiles=%s outputPotential=%s outputElectricDisplacementFields=%s outputDivergences=%s', repertoire, executable, input, paramstr, param(i), paramstr0, param0(i),paramstr1,param1,paramstr2,param2,paramstr3,param3,paramstr4,param4,paramstr5,param5,paramstr6,param6,paramstr7,param7,paramstr8,param8,paramstr9,param9,output{1,i},output{2,i},output{3,i},output{4,i});
+    disp(cmd)   
+    system(cmd); 
 end
-
-% disp('Exercice6_KervynLeMeur configuration.in');   
-% system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse
 % Parcours des resultats de toutes les simulations
 phip = zeros(1,nsimul);
 
 for i=1:nsimul
-    Analyse(filename2(i));
+    Analyse(filename(i));
 end
 
 
 %% Analyse de convergence sur phi_0
-phi_0 = (R_^2)/4 + V0_; %solution analytique
+phi_0 = (param2^2)/4 + param5; %solution analytique
 figure('Name',"Convergence phi_0")
 Errphi = zeros(1,nsimul);
 for i=1:nsimul
-    data = load([filename2(i)+'_phi.out']);
+    data = load([filename(i)+'_phi.out']);
     r = data(:,1);
     phi = data(:,2);
     Errphi(1,i) = abs(phi(1)-phi_0)/phi_0 *100;
