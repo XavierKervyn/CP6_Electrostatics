@@ -144,27 +144,29 @@ figure('Name','plot E')
     xlabel('$r$ [m]'); ylabel('$E$ [V/m]');
     grid on; hold on; set(gca,'fontsize',fs);
 
-
 %% Convergence de phi(r=b) pour différentes valeurs
 
 figure('Name',"Convergence phi r b")
 phirb  = zeros(1,nsimul); %valeur de phi en r = b
 rind   = zeros(1,nsimul); %valeur de r à l'indice trouvé
-ind    = zeros(1,nsimul); 
+ind    = zeros(1,nsimul); %indices relevés
 for i=1:nsimul
     data = load([filename2(i)+'_phi.out']);
     r    = data(:,1);
     [val,indice] = min(abs(r - b_));
-    rind(i)   = r(indice);
-    phirb(i)  = data(indice,2);
-      ind(i)  =  indice;
+    if(r(indice) < b_)
+        indice = indice-1;
+    end
+    rind(i)      = r(indice);
+    phirb(i)     = data(indice,2);
+    ind(i)       =  indice;
 end
-    loglog(N, phirb,'x','Markersize',ms,'HandleVisibility','off');
-    xlabel('$N$'); ylabel('$\phi(r=b)$ [V]');
-    grid on; hold on; set(gca,'fontsize',fs);
-%     P = polyfit(log(N), log(phi),1);
-%     z = polyval(P,log(N));
-%     loglog(N,exp(z),'--','Linewidth',lw);
-%     pentes = P(1); legendStrings = string(pentes);
-%     leg = legend(legendStrings,'Location','southwest','NumColumns',2);
-%     title(leg, 'Linear fit: slope')  
+    plot(1./N, phirb,'x','Linewidth',lw,'HandleVisibility','off');
+    xlabel('$1/N$'); ylabel('$\phi(r=b)$ [V]');
+    grid minor; hold on; set(gca,'fontsize',fs);
+    P = polyfit(1./N, phirb,1);
+    z = polyval(P,1./N);
+    loglog(1./N,z,'--','Linewidth',lw);
+    yintercept = P(2); legendStrings = string(yintercept);
+    leg = legend(legendStrings,'Location','northwest','NumColumns',2);
+    title(leg, '$y$-intercept:')  
