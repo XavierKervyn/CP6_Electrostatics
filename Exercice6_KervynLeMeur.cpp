@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
       lower[k]-= (mid+trap) ;
       upper[k]= lower[k];
       rhs[k]= h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
-
+      rhs[k+1]= h[k]*(p*r[k]*rho_lib(r[k+1])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
     }
 
   // TODO: Condition au bord:
