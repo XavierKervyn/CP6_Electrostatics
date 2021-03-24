@@ -30,8 +30,8 @@ filename2 = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
 for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
 end
+%% Simulations
 
-% Simulations
 for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
@@ -47,7 +47,6 @@ for i=1:nsimul
     Analyse(filename2(i));
 end
 %% Analyse de convergence sur phi_0
-
 phi_0 = (R_^2)/4 + V0_; %solution analytique
 figure('Name',"Convergence phi_0")
 Errphi = zeros(1,nsimul);
@@ -68,6 +67,7 @@ end
     title(leg, 'Linear fit: slope')  
 
 %% Paramètres: cas non trivial
+
 clear all; clc
 format long;
 
@@ -100,7 +100,8 @@ for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
 end
 
-% Simulations 2 (non trivial)
+%% Simulations 2 (non trivial)
+
 for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
@@ -112,15 +113,17 @@ end
 % disp('Exercice6_KervynLeMeur configuration.in');   
 % system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 2 (cas non trivial)
+% Parcours des resultats de toutes les simulations
+phip = zeros(1,nsimul);
 
 for i=1:nsimul
-    Analyse(filename2(i));
+    Analyse(filename(i));
 end
 
-%% Plot phi et E pour différentes valeurs de N (cas non trivial)
+%% Plot phi et E pour différentes valeurs de N (ca
 figure('Name','plot phi')
     for i=1:nsimul
-        data = load([filename2(i)+'_phi.out']);
+        data = load([filename(i)+'_phi.out']);
         r = data(:,1);
         phi = data(:,2);
         plot(r,phi,'-','Linewidth',lw);
@@ -131,7 +134,7 @@ figure('Name','plot phi')
     
 figure('Name','plot E')
     for i=1:nsimul
-        data = load([filename2(i)+'_E_D.out']);
+        data = load([filename(i)+'_E_D.out']);
         r = data(:,1);
         E = data(:,2);
         plot(r,E,'-','Linewidth',lw);
@@ -146,7 +149,7 @@ figure('Name','plot E')
 figure('Name',"Convergence phi r b")
 phirb = zeros(1,nsimul); %valeur de phi en r = b
 for i=1:nsimul
-    data = load([filename2(i)+'_phi.out']);
+    data = load([filename(i)+'_phi.out']);
     r   = data(:,1);
     [val,indice] = min(abs(r - b_));
     phi = data(:,2);
