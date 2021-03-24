@@ -127,11 +127,11 @@ int main(int argc, char* argv[])
   int ninters = N1 + N2;
   int npoints = N1 + N2 + 1;
   vector<double> r(npoints,0);
-  vector<double> h(ninters,b/N1);
+  vector<double> h(ninters,b/(N1+1));
 
   for(size_t k(N1); k<h.size(); ++k)
   {
-	  h[k] = (R-b)/N2;
+	  h[k] = (R-b)/(N2+1);
   }
   for(size_t k(1); k<r.size(); ++k)
   {

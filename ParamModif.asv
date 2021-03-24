@@ -30,14 +30,16 @@ filename2 = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
 for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
 end
-%% Simulations
 
+% Simulations
 for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6_KervynLeMeur configuration_.in');   
-    system('Exercice6_KervynLeMeur configuration_.in'); 
+%     disp('Exercice6_KervynLeMeur configuration_.in');   
+%     system('Exercice6_KervynLeMeur configuration_.in'); 
+    disp('Exercice6 configuration_.in');   
+    system('Exercice6 configuration_.in');
 end
 
 % disp('Exercice6_KervynLeMeur configuration.in');   
@@ -47,6 +49,7 @@ for i=1:nsimul
     Analyse(filename2(i));
 end
 %% Analyse de convergence sur phi_0
+
 phi_0 = (R_^2)/4 + V0_; %solution analytique
 figure('Name',"Convergence phi_0")
 Errphi = zeros(1,nsimul);
@@ -67,11 +70,10 @@ end
     title(leg, 'Linear fit: slope')  
 
 %% Paramètres: cas non trivial
-
 clear all; clc
 format long;
 
-nsimul = 20; N = round(logspace(1,4,nsimul));
+nsimul = 20; N = round(logspace(3,4,nsimul));
 trivial_    = false;
 if (trivial_)
     N1_ = N; N2_ = N;
@@ -100,30 +102,29 @@ for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
 end
 
-%% Simulations 2 (non trivial)
-
+% Simulations 2 (non trivial)
 for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6_KervynLeMeur configuration_.in');   
-    system('Exercice6_KervynLeMeur configuration_.in'); 
+%     disp('Exercice6_KervynLeMeur configuration_.in');   
+%     system('Exercice6_KervynLeMeur configuration_.in'); 
+    disp('Exercice6 configuration_.in');   
+    system('Exercice6 configuration_.in'); 
 end
 
 % disp('Exercice6_KervynLeMeur configuration.in');   
 % system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 2 (cas non trivial)
-% Parcours des resultats de toutes les simulations
-phip = zeros(1,nsimul);
 
 for i=1:nsimul
-    Analyse(filename(i));
+    Analyse(filename2(i));
 end
 
-%% Plot phi et E pour différentes valeurs de N (ca
+%% Plot phi et E pour différentes valeurs de N (cas non trivial)
 figure('Name','plot phi')
     for i=1:nsimul
-        data = load([filename(i)+'_phi.out']);
+        data = load([filename2(i)+'_phi.out']);
         r = data(:,1);
         phi = data(:,2);
         plot(r,phi,'-','Linewidth',lw);
@@ -134,7 +135,7 @@ figure('Name','plot phi')
     
 figure('Name','plot E')
     for i=1:nsimul
-        data = load([filename(i)+'_E_D.out']);
+        data = load([filename2(i)+'_E_D.out']);
         r = data(:,1);
         E = data(:,2);
         plot(r,E,'-','Linewidth',lw);
@@ -143,24 +144,33 @@ figure('Name','plot E')
     xlabel('$r$ [m]'); ylabel('$E$ [V/m]');
     grid on; hold on; set(gca,'fontsize',fs);
 
-
 %% Convergence de phi(r=b) pour différentes valeurs
 
 figure('Name',"Convergence phi r b")
-phirb = zeros(1,nsimul); %valeur de phi en r = b
+phirb  = zeros(1,nsimul); %valeur de phi en r = b
+rind   = zeros(1,nsimul); %valeur de r à l'indice trouvé
+ind    = zeros(1,nsimul); %indices relevés
 for i=1:nsimul
-    data = load([filename(i)+'_phi.out']);
-    r   = data(:,1);
+    data = load([filename2(i)+'_phi.out']);
+    r    = data(:,1);
     [val,indice] = min(abs(r - b_));
-    phi = data(:,2);
-    phirb(i) = phi(indice);
+    if(r(indice) > b_)
+        indice = indice-1;
+    end
+    rind(i)      = r(indice);
+    phirb(i)     = data(indice,2);
+    ind(i)       =  indice;
 end
-    loglog(N, phirb,'x','Markersize',ms,'HandleVisibility','off');
-    xlabel('$N$'); ylabel('$\phi(r=b)$ [V]');
-    grid on; hold on; set(gca,'fontsize',fs);
-%     P = polyfit(log(N), log(phi),1);
-%     z = polyval(P,log(N));
-%     loglog(N,exp(z),'--','Linewidth',lw);
-%     pentes = P(1); legendStrings = string(pentes);
-%     leg = legend(legendStrings,'Location','southwest','NumColumns',2);
-%     title(leg, 'Linear fit: slope')  
+    %extrapolation
+    P = polyfit(1./N, phirb,1); yintercept = P(2); 
+    err = abs((phirb - yintercept)/yintercept * 100);
+    P2 = polyfit(log(1./N), log(err),1); 
+    z = polyval(P2,log(1./N));
+    loglog(1./N,z,'--','Linewidth',lw);
+    loglog(1./N, err,'x','Linewidth',lw,'HandleVisibility','off');
+    xlabel('$1/N$'); ylabel('Rel error on $\phi_{intercept}(r=b)$ [\%]');
+    grid minor; hold on; set(gca,'fontsize',fs);
+    legendStrings = string(P2(1));
+    leg = legend(legendStrings,'Location','northwest','NumColumns',2);
+    title(leg, 'linear fit: slope')
+    
