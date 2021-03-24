@@ -73,7 +73,7 @@ end
 clear all; clc
 format long;
 
-nsimul = 20; N = round(logspace(3,4,nsimul));
+nsimul = 1; N = round(logspace(3,4,nsimul));
 trivial_    = false;
 if (trivial_)
     N1_ = N; N2_ = N;
@@ -159,7 +159,7 @@ for i=1:nsimul
     end
     rind(i)      = r(indice);
     phirb(i)     = data(indice,2);
-    ind(i)       =  indice;
+    ind(i)       = indice;
 end
     %extrapolation
     P = polyfit(1./N, phirb,1); yintercept = P(2); 
@@ -188,3 +188,15 @@ figure('Name',"Convergence phi r b")
     xlabel('$1/N$'); ylabel('Rel. error on $\phi_{as}(r=b)$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
     
+%% Question d.ii
+figure('Name',"verification of Gauss' law")
+for i=1:nsimul
+    data   = load([filename2(i)+'_div_E_D.out']);
+    r      = data(:,1);
+    rholib = data(:,2);
+    divD   = data(:,4);
+    
+    plot(r, abs((rholib-divD)/a0_) * 100,'.');
+    xlabel('$1/N$'); ylabel('Rel. err. on $\frac{1}{\varepsilon_0}|\rho_{lib} - \nabla \cdot D|$ [\%]');
+    grid minor; hold on; set(gca,'fontsize',fs);
+end
