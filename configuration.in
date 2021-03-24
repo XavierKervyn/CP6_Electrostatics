@@ -1,0 +1,20 @@
+% Parametres physiques :
+trivial = true	   % si vrai, le cas trivial est simule
+b  = 3.e-1 	   % rayon de la partie vide
+R  = 5.e-1 	   % rayon exterieur
+a0 = -3.e4 	   % valeur de reference du profil de densite de charges libres
+epsilon_r = 4.e0   % valeur de reference du profil de la constante dielectrique
+V0 = 2.2e2 	   % potentiel au bord
+
+% Parametres numeriques :
+proportionalMesh = false % si vrai, N2=meshFactor*N1
+meshFactor = 0.5      % mesh proportional factor 
+N1 = 1129  	      % nombre d'intervalles domain 1
+N2 = 1129	      % nombre d'intervalles domain 2
+p = 1.e0 	      % methode d'integration: p=1 trapeze p=0 midpoint
+outputDataProfiles = outputDataProfiles.out % ficher output de  r_i epsilon_r(r_i) et rho_lib(r_i)/epsilon_0
+outputPotential = outputPotential.out	    % ficher output de r_i et phi(r_i)
+outputElectricDisplacementFields = outputElectricDisplacementFields.out % ficher d'output de r_mid,i, E_r(r_mid,i) et D_r(r_rmid,i)/epsilon_0
+outputDivergences = outputDivergences.out   % ficher output de r_midmid,i, div E(r_midmid,i) et div D(r_midmid,i)/epsilon_0 
+
+
