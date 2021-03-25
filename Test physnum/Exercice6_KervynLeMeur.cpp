@@ -51,7 +51,7 @@ public:
   }
 
 private:
-  bool trivial;
+  bool trivial=1;
   double b=0., R=0., relative_epsilon=0.;
 
 };
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
   {
 	  h[k] = (R-b)/N2;
   }
-  for(size_t k(1); k<=r.size(); ++k)
+  for(size_t k(1); k<r.size(); ++k)
   {
 	  r[k] = r[k-1] + h[k-1];
   }
@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
       lower[k]-= (mid+trap) ;
       upper[k]= lower[k];
       rhs[k]= h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
-
+      rhs[k+1]= h[k]*(p*r[k]*rho_lib(r[k+1])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
     }
 
   // TODO: Condition au bord:
@@ -210,8 +210,8 @@ int main(int argc, char* argv[])
   for(int i(0); i<ninters-1; ++i)
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
-    div_Er[i] = 1.0/rmidmid[i]*((rmid[i+1]*Er[i+1] - rmid[i]*Er[i])/(rmid[i+1]-rmid[i]));
-    div_Dr[i] = 1.0/rmidmid[i]*((rmid[i+1]*Dr[i+1] - rmid[i]*Dr[i])/(rmid[i+1]-rmid[i]));
+    div_Er[i] = 1.0/rmid[i]*((rmid[i+1]*Er[i+1] - rmid[i]*Er[i])/(rmid[i+1]-rmid[i]));
+    div_Dr[i] = 1.0/rmid[i]*((rmid[i+1]*Dr[i+1] - rmid[i]*Dr[i])/(rmid[i+1]-rmid[i]));
   }
   ofs.open(configFile.get<string>("outputDivergences").c_str());
   ofs.precision(15);

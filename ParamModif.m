@@ -1,6 +1,6 @@
-%% Parametres
+%% Parametres /////////////////////////////////////////////////////////////
 clear all; clc
-format long;
+ViewFormat;
 
 nsimul = 20; N = round(logspace(1,4,nsimul));
 trivial_    = true;
@@ -19,13 +19,6 @@ MeshFactor_ = 0.5;
 p_          = 1.e0;
 propMesh_   = false;
 
-lw=1; fs = 18; ms = 7;
-set(groot, 'DefaultTextInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesTickLabelInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesFontName', 'LaTeX');
-set(groot, 'DefaultLegendInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesBox', 'on');
-
 filename2 = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
 for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
@@ -36,14 +29,10 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-%     disp('Exercice6_KervynLeMeur configuration_.in');   
-%     system('Exercice6_KervynLeMeur configuration_.in'); 
     disp('Exercice6 configuration_.in');   
     system('Exercice6 configuration_.in');
 end
 
-% disp('Exercice6_KervynLeMeur configuration.in');   
-% system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 1: plot de tous les graphes
 for i=nsimul:nsimul
     Analyse(filename2(i));
@@ -67,12 +56,12 @@ end
     title(leg, 'Steps $N$') 
     
     % create a new pair of axes inside current figure [.65 .175 .25 .25]
-    axes('position',[0.65 0.65 0.28 0.28])
+    axes('position',[0.65 0.68 0.30 0.30])
     box on % put box around new pair of axes
 for i=[13 17]
     data    = load([filename2(i)+'_phi.out']);
     r       = data(:,1);
-    indexOfInterest = (r < 0.1); % range of r near perturbation
+    indexOfInterest = (r < 0.07); % range of r near perturbation
     phi     = data(:,2);
     phi_ana = (R_^2 - r.^2)/4 + V0_; %solution analytique
     plot(r(indexOfInterest),phi(indexOfInterest),'.','Linewidth',lw);
@@ -81,6 +70,7 @@ end
     %plot de la solution analytique, avec la range de la dernière simu
     plot(r(indexOfInterest),phi_ana(indexOfInterest),'r--','Linewidth',lw) % plot on new axes
     axis tight
+    SaveIMG('ComparaisonQualitativePhiTrivial');
     
 figure('Name','plot superposé E & D')
     i = 5;
@@ -95,6 +85,7 @@ figure('Name','plot superposé E & D')
     grid on; hold on; set(gca,'fontsize',fs);
     leg = legend('$E_r$','$D/\varepsilon_0$','Location','southeast','NumColumns',1);
     title(leg,"$N=$ "+num2str(N(i)));
+    SaveIMG('ComparaisonQualitativeEDTrivial');
 
 %% Analyse de convergence sur phi_0
 
@@ -107,19 +98,15 @@ for i=1:nsimul
     phi = data(:,2);
     Errphi(1,i) = abs(phi(1)-phi_0)/phi_0 *100;
 end
-    loglog(N, Errphi ,'x','Markersize',ms,'HandleVisibility','off');
+    loglog(N, Errphi ,'x','Linewidth',lw,'HandleVisibility','off');
     xlabel('$N$'); ylabel('Relative error on $\phi(0)$ [\%]');
     grid on; hold on; set(gca,'fontsize',fs);
-    P = polyfit(log(N), log(Errphi),1);
-    z = polyval(P,log(N));
-    loglog(N,exp(z),'--','Linewidth',lw);
-    pentes = P(1); legendStrings = string(pentes);
-    leg = legend(legendStrings,'Location','southwest','NumColumns',2);
-    title(leg, 'Linear fit: slope')  
+    FitLOGLOG(N,Errphi,1);
+    SaveIMG('ConvergencePhi0');
 
-%% Paramètres: cas non trivial
+%% Paramètres: cas non trivial ////////////////////////////////////////////
 clear all; clc
-format long;
+ViewFormat;
 
 nsimul = 20; N = round(logspace(3,4,nsimul));
 trivial_    = false;
@@ -138,13 +125,6 @@ MeshFactor_ = 0.5;
 p_          = 1.e0;
 propMesh_   = true;
 
-lw=1; fs = 18; ms = 7;
-set(groot, 'DefaultTextInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesTickLabelInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesFontName', 'LaTeX');
-set(groot, 'DefaultLegendInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesBox', 'on');
-
 filename2  = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
 for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
@@ -155,22 +135,16 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-%     disp('Exercice6_KervynLeMeur configuration_.in');   
-%     system('Exercice6_KervynLeMeur configuration_.in'); 
     disp('Exercice6 configuration_.in');   
     system('Exercice6 configuration_.in'); 
 end
-
-% disp('Exercice6_KervynLeMeur configuration.in');   
-% system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 2 (cas non trivial)
 for i=1:nsimul
     Analyse(filename2(i));
 end
-
 %% Plot phi et E pour différentes valeurs de N (cas non trivial)
 figure('Name','plot phi')
-    intervalle = 1;
+    intervalle = 5;
     for i=1:intervalle:nsimul
         data = load([filename2(i)+'_phi.out']);
         r = data(:,1);
@@ -181,8 +155,9 @@ figure('Name','plot phi')
     xlabel('$r$ [m]'); ylabel('$\phi$ [V]');
     grid on; hold on; set(gca,'fontsize',fs);
     steps = N(1:intervalle:nsimul); legendStrings = string(steps);
-    leg = legend(legendStrings,'Location','southeast','NumColumns',1);
-    title(leg, 'Steps $N$')  
+    leg = legend(legendStrings,'Location','southwest','NumColumns',1);
+    title(leg, '$N$')
+    SaveIMG('PhiNonTrivial');
     
 figure('Name','plot E')
     for i=1:intervalle:nsimul
@@ -196,24 +171,25 @@ figure('Name','plot E')
     grid on; hold on; set(gca,'fontsize',fs);
     steps = N(1:intervalle:nsimul); legendStrings = string(steps);
     leg = legend(legendStrings,'Location','southeast','NumColumns',1);
-    title(leg, 'Steps $N$')  
+    title(leg, '$N$')
+    SaveIMG('ENonTrivial');
 
 %% Convergence de phi(r=b) pour différentes valeurs
-
 figure('Name',"phi r b en fonction de 1./N")
 phirb  = zeros(1,nsimul); %valeur de phi en r = b
 rind   = zeros(1,nsimul); %valeur de r à l'indice trouvé
 ind    = zeros(1,nsimul); %indices relevés
+rfin   = zeros(1,nsimul); %r final
+phifin = zeros(1,nsimul); %phi final
 for i=1:nsimul
     data = load([filename2(i)+'_phi.out']);
     r    = data(:,1);
     [val,indice] = min(abs(r - b_));
-    if(r(indice) > b_)
-        indice = indice-1;
-    end
-    rind(i)      = r(indice);
+    rind(i)      = r(indice+1);
     phirb(i)     = data(indice,2);
     ind(i)       = indice;
+    rfin(i)      = r(end);
+    phifin(i)    = data(end,2);
 end
     %extrapolation
     P = polyfit(1./N, phirb,1); yintercept = P(2); 
@@ -232,22 +208,19 @@ end
     title(leg, '$\phi_{as}$ [V]')
     xlabel('$1/N$'); ylabel('$\phi(r=b)$ [V]');
     grid minor; hold on; set(gca,'fontsize',fs);
+    SaveIMG('PhiRBasymptotique');
 
 figure('Name',"Convergence phi r b")
-    P2 = polyfit(log(1./N),log(err),1); 
-    z  = polyval(P2, log(1./N));
-    loglog(1./N,exp(z),'--','Linewidth',lw);
+    FitLOGLOG(1./N,err,1);
     hold on
     loglog(1./N,err,'x','Linewidth',lw,'HandleVisibility','off');
-    legendStrings = string(P2(1));
-    leg = legend(legendStrings,'Location','northwest','NumColumns',2);
-    title(leg, 'linear fit: slope')
     xlabel('$1/N$'); ylabel('Rel. error on $\phi_{as}(r=b)$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
+    SaveIMG('ConvergencePhiRBasymptotique');
     
-%% Paramètres: cas non trivial et question d.ii
+%% Paramètres: cas non trivial et question d.ii ///////////////////////////
 clear all; clc
-format long;
+ViewFormat;
 
 nsimul = 1; N = round(logspace(3,4,nsimul));
 trivial_    = false;
@@ -267,13 +240,6 @@ MeshFactor_ = 0.5;
 p_          = 1.e0;
 propMesh_   = true;
 
-lw=1; fs = 18; ms = 7;
-set(groot, 'DefaultTextInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesTickLabelInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesFontName', 'LaTeX');
-set(groot, 'DefaultLegendInterpreter', 'LaTeX');
-set(groot, 'DefaultAxesBox', 'on');
-
 filename2  = "N1_"+ num2str(N1_(1),8) + "N2_" + num2str(N2_(1),8) ;
 for i = 2:nsimul
     filename2(i)="N1_"+ num2str(N1_(i),8)+"N2_"+num2str(N2_(i),8) ;
@@ -284,14 +250,9 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-%     disp('Exercice6_KervynLeMeur configuration_.in');   
-%     system('Exercice6_KervynLeMeur configuration_.in'); 
     disp('Exercice6 configuration_.in');   
     system('Exercice6 configuration_.in'); 
 end
-
-% disp('Exercice6_KervynLeMeur configuration.in');   
-% system('Exercice6_KervynLeMeur configuration.in');
     
 % Question d.ii
 figure('Name',"verification of Gauss' law")

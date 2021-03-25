@@ -129,13 +129,14 @@ int main(int argc, char* argv[])
   vector<double> r(npoints,0);
   vector<double> h(ninters,b/(N1));
 
-  for(size_t k(N1); k<h.size(); ++k)
+  for(size_t k(N1); k<h.size();++k)
   {
 	  h[k] = (R-b)/(N2+1);
   }
   for(size_t k(1); k<r.size(); ++k)
   {
-	  r[k] = r[k-1] + h[k-1];
+	  //r[k] = r[k-1] + h[k-1];
+    r[k] = r[k-1] + h[k];
   }
 
   vector<double> diag(npoints,0.);  // Diagonale
