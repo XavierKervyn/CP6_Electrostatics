@@ -45,9 +45,26 @@ end
 % disp('Exercice6_KervynLeMeur configuration.in');   
 % system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 1: plot de tous les graphes
-for i=1:nsimul
+for i=nsimul:nsimul
     Analyse(filename2(i));
 end
+
+%% Analyse: plot superposé
+figure('Name','plot superposé phi')
+for i=1:4:nsimul
+    data    = load([filename2(i)+'_phi.out']);
+    r       = data(:,1);
+    phi     = data(:,2);
+    phi_ana = (R_^2 - r.^2)/4 + V0_; %solution analytique
+    plot(r,phi,'.','Linewidth',lw);
+    hold on
+end
+    Pana = plot(r,phi_ana,'r--','Linewidth',lw);
+    xlabel('$r [m]$'); ylabel('$\phi$ [V]');
+    grid on; hold on; set(gca,'fontsize',fs);
+    steps = N(1:4:nsimul); legendStrings = [string(steps),"$\phi_{ana}$"];
+    leg = legend(legendStrings,'Location','southwest','NumColumns',2);
+    title(leg, 'Steps $N$')  
 %% Analyse de convergence sur phi_0
 
 phi_0 = (R_^2)/4 + V0_; %solution analytique
@@ -60,7 +77,7 @@ for i=1:nsimul
     Errphi(1,i) = abs(phi(1)-phi_0)/phi_0 *100;
 end
     loglog(N, Errphi ,'x','Markersize',ms,'HandleVisibility','off');
-    xlabel('$N$'); ylabel('Relative error on $\phi_0$ [\%]');
+    xlabel('$N$'); ylabel('Relative error on $\phi(0)$ [\%]');
     grid on; hold on; set(gca,'fontsize',fs);
     P = polyfit(log(N), log(Errphi),1);
     z = polyval(P,log(N));
@@ -116,33 +133,39 @@ end
 % disp('Exercice6_KervynLeMeur configuration.in');   
 % system('Exercice6_KervynLeMeur configuration.in');
 %% Analyse 2 (cas non trivial)
-
 for i=1:nsimul
     Analyse(filename2(i));
 end
 
 %% Plot phi et E pour différentes valeurs de N (cas non trivial)
 figure('Name','plot phi')
-    for i=1:nsimul
+    intervalle = 1;
+    for i=1:intervalle:nsimul
         data = load([filename2(i)+'_phi.out']);
         r = data(:,1);
         phi = data(:,2);
-        plot(r,phi,'-','Linewidth',lw);
+        plot(r,phi,'.','Linewidth',lw);
         hold on
     end
     xlabel('$r$ [m]'); ylabel('$\phi$ [V]');
     grid on; hold on; set(gca,'fontsize',fs);
+    steps = N(1:intervalle:nsimul); legendStrings = string(steps);
+    leg = legend(legendStrings,'Location','southeast','NumColumns',1);
+    title(leg, 'Steps $N$')  
     
 figure('Name','plot E')
-    for i=1:nsimul
+    for i=1:intervalle:nsimul
         data = load([filename2(i)+'_E_D.out']);
         r = data(:,1);
         E = data(:,2);
-        plot(r,E,'-','Linewidth',lw);
+        plot(r,E,'.','Linewidth',lw);
         hold on
     end
-    xlabel('$r$ [m]'); ylabel('$E$ [V/m]');
+    xlabel('$r$ [m]'); ylabel('$E_r$ [V/m]');
     grid on; hold on; set(gca,'fontsize',fs);
+    steps = N(1:intervalle:nsimul); legendStrings = string(steps);
+    leg = legend(legendStrings,'Location','southeast','NumColumns',1);
+    title(leg, 'Steps $N$')  
 
 %% Convergence de phi(r=b) pour différentes valeurs
 
@@ -166,13 +189,16 @@ end
     err = abs((phirb - yintercept)/yintercept)*100;
     
     %plot 
-    plot(1./N, phirb,'x','Linewidth',lw);
+    plot(1./N, phirb,'x','Linewidth',lw,'HandleVisibility','off');
     hold on
     zprime = polyval(P, 1./N);
-    plot(1./N, zprime,'--','Linewidth',lw);
+    %plot(1./N, zprime,'--','Linewidth',lw);
     legendStrings = string(P(2));
+    xrange = (0:0.05:1)*1.e-3;
+    plot(xrange, P(1)*xrange + P(2),'--','Linewidth',lw,'HandleVisibility','off');
+    yas = plot(0,P(2),'r +','Markersize',15,'Linewidth',lw+2);
     leg = legend(legendStrings,'Location','northwest','NumColumns',2);
-    title(leg, '$y$-intercept $\phi_{as}$ [V]')
+    title(leg, '$\phi_{as}$ [V]')
     xlabel('$1/N$'); ylabel('$\phi(r=b)$ [V]');
     grid minor; hold on; set(gca,'fontsize',fs);
 
@@ -194,10 +220,11 @@ format long;
 
 nsimul = 1; N = round(logspace(3,4,nsimul));
 trivial_    = false;
+N1_ = N;
 if (trivial_)
-    N1_ = N; N2_ = N;
+    N2_ = N;
 else
-    N1_ = N; N2_ = 2*N;
+    N2_ = 2*N;
 end
 
 b_          = 3.e-1 ;
@@ -244,7 +271,7 @@ for i=1:nsimul
     divD   = data(:,4);
     
     plot(r, abs((rholib-divD)/a0_) * 100,'.');
-    xlabel('$1/N$'); ylabel('Rel. err. on $\frac{1}{\varepsilon_0}|\rho_{lib} - \nabla \cdot D|$ [\%]');
+    xlabel('$1/N$'); ylabel('Rel. err. on $A$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
 
@@ -257,7 +284,7 @@ for i=1:nsimul
     
     err = abs((rholib-divD)/a0_) * 100;
     plot(r(1:N1_(i)-2), err(1:N1_(i)-2),'.');
-    xlabel('$1/N$'); ylabel('Rel. err. on $\frac{1}{\varepsilon_0}|\rho_{lib} - \nabla \cdot D|$ [\%]');
+    xlabel('$1/N$'); ylabel('Rel. err. on $A$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
 
@@ -269,20 +296,43 @@ for i=1:nsimul
     divD   = data(:,4);
     
     err = abs((rholib-divD)/a0_) * 100;
-    plot(r(N1_(i)+2:end-1), err(N1_(i)+2:end-1),'.');
-    xlabel('$1/N$'); ylabel('Rel. err. on $\frac{1}{\varepsilon_0}|\rho_{lib} - \nabla \cdot D|$ [\%]');
+    plot(r(N1_(i)+3:end-1), err(N1_(i)+3:end-1),'.');
+    xlabel('$1/N$'); ylabel('Rel. err. on $A$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
 
 % calcul de la densité de charges de polarisation
-rho_pol = data(:,3) - divD;
+divE    = data(:,3);
+rho_pol = divE - divD;
+% epsr    = zeros(length(r));
+% for i=1:length(r)
+%    if (r(i) < b_)
+%        epsr(i) = 1;
+%    else
+%        epsr(i) = 4;
+%    end
+% end
+% rho_pol = (1-epsr).*data(:,3);
+
 figure('Name',"plot rho pol")
-    plot(r, rho_pol,'.','Linewidth',lw);
-    xlabel('$r$ [m]'); ylabel('$\rho_{pol} / \varepsilon_0 $ [V/m$^2$]');
-    grid minor; hold on; set(gca,'fontsize',fs);
-    
+        plot(r, rho_pol,'.','Linewidth',lw);
+    hold on
+%         plot(r, -3*divE,'.','Linewidth',lw)
+        xlabel('$r$ [m]'); ylabel('$\rho_{pol} / \varepsilon_0 $ [V/m$^2$]');
+        grid minor; hold on; set(gca,'fontsize',fs);
+
+figure('Name',"verification rho pol law avant b")
+    plot(r(3:N1_(i)-2), rho_pol(3:N1_(i)-2),'.');
+    xlabel('$r [m]$'); ylabel('$\rho_{pol}$ [V/m$^2$]');
+    grid on; set(gca,'fontsize',fs);
+
+figure('Name',"verification rho pol après b")
+    plot(r(N1_(i)+3:end-1), rho_pol(N1_(i)+3:end-1),'.');
+    xlabel('$r [m]$'); ylabel('$\rho_{pol}$ [V/m$^2$]');
+    grid on; set(gca,'fontsize',fs);      
+        
 figure('Name',"plot rho lib")
-    plot(r, rholib,'.','Linewidth',lw);
-    xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
-    grid minor; hold on; set(gca,'fontsize',fs);
+        plot(r, rholib,'.','Linewidth',lw);
+        xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
+        grid minor; hold on; set(gca,'fontsize',fs);
     

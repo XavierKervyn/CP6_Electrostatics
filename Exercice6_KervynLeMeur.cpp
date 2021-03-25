@@ -210,8 +210,8 @@ int main(int argc, char* argv[])
   for(int i(0); i<ninters-1; ++i)
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
-    div_Er[i] = 1.0/rmidmid[i]*((rmid[i+1]*Er[i+1] - rmid[i]*Er[i])/(rmid[i+1]-rmid[i]));
-    div_Dr[i] = 1.0/rmidmid[i]*((rmid[i+1]*Dr[i+1] - rmid[i]*Dr[i])/(rmid[i+1]-rmid[i]));
+    div_Er[i] = 1.0/rmid[i]*((rmid[i+1]*Er[i+1] - rmid[i]*Er[i])/(rmid[i+1]-rmid[i]));
+    div_Dr[i] = 1.0/rmid[i]*((rmid[i+1]*Dr[i+1] - rmid[i]*Dr[i])/(rmid[i+1]-rmid[i]));
   }
   ofs.open(configFile.get<string>("outputDivergences").c_str());
   ofs.precision(15);

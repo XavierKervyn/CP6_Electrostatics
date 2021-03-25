@@ -21,7 +21,7 @@ divEr = data(:,3);
 divDr = data(:,4);
 
 figure
-plot(r,phi)
+plot(r,phi,'Linewidth',lw)
 xlabel('$r$ [m]')
 ylabel('$\phi$ [V]')
 grid on, box on
@@ -29,7 +29,7 @@ set(gca,'fontsize',fs)
 
 figure
 hold on
-plot(rmid,Er)
+plot(rmid,Er,'Linewidth',lw)
 xlabel('$r$ [m]')
 ylabel('$E_r$ [V/m]')
 grid on, box on
@@ -37,7 +37,7 @@ set(gca,'fontsize',fs)
 
 figure
 hold on
-plot(rmid,Dr)
+plot(rmid,Dr,'Linewidth',lw)
 xlabel('$r$ [m]')
 ylabel('$D_r/\epsilon_0$ [V/m]')
 grid on, box on
@@ -45,12 +45,12 @@ set(gca,'fontsize',fs)
 
 figure
 hold on
-plot(rmidmid,rholib,'DisplayName',"$\rho_{lib} / \epsilon_0$")
-plot(rmidmid,divDr,'--','DisplayName',"$(\nabla \cdot D_r) / \epsilon_0$")
-plot(rmidmid,divEr-divDr,'DisplayName',"$\rho_{pol} / \epsilon_0$")
+plot(rmidmid,rholib,'Linewidth',lw,'DisplayName',"$\rho_{lib} / \epsilon_0$")
+plot(rmidmid,divDr,'--','Linewidth',lw, DisplayName',"$(\nabla \cdot D_r) / \epsilon_0$")
+plot(rmidmid,divEr-divDr,'Linewidth',lw,'DisplayName',"$\rho_{pol} / \epsilon_0$")
 xlabel('$r$')
 ylabel("$\rho / \epsilon_0$ [V/m$^2$]")
-legend('show')
+legend('show','Location','southeast')
 grid on, box on
 set(gca,'fontsize',fs)
 

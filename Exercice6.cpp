@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
     // TODO: Calculer E_r et D_r/epsilon_0 aux milieux des intervalles
     // en utilisant la repr�sentation en �l�ments finis
     Er[i] = -(phi[i+1] - phi[i])/h[i];
-    Dr[i] = Er[i]/(epsilonr(r[i],r[i]<b));
+    Dr[i] = Er[i]*(epsilonr(rmid[i],rmid[i]<b));
   }
   ofs.open(\
   configFile.get<string>("outputElectricDisplacementFields").c_str());
@@ -222,12 +222,12 @@ int main(int argc, char* argv[])
   }
   vector<double> div_Er(ninters-1);
   vector<double> div_Dr(ninters-1);
-  for(int i(0); i<ninters-1; ++i)
+  for(int i(1); i<=ninters-1; ++i)
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
     // en utilisant des diff�rences finies centr�es aux milieux des milieux des intervalles
-	div_Er[i] = 1.0 / rmidmid[i] * ( ( rmidmid[i+1] * Er[i+1] - rmidmid[i] * Er[i] ) / ( rmidmid[i+1] - rmidmid[i] ) );
-  div_Dr[i] = 1.0 / rmidmid[i] * ( ( rmidmid[i+1] * Dr[i+1] - rmidmid[i] * Dr[i] ) / ( rmidmid[i+1] - rmidmid[i] ) );
+	div_Er[i] = 1.0 / rmidmid[i-1] * ( ( rmid[i] * Er[i] - rmid[i-1] * Er[i-1] ) / ( rmid[i] - rmid[i-1] ) );
+  div_Dr[i] = 1.0 / rmidmid[i-1] * ( ( rmid[i] * Dr[i] - rmid[i-1] * Dr[i-1] ) / ( rmid[i] - rmid[i-1] ) );
   //div_Dr[i]= 1/rmidmid[i] * (Dr[i] + rmidmid[i]* (Dr[i+1]-Dr[i])/(rmidmid[i+1]-rmidmid[i]));
   }
   ofs.open(configFile.get<string>("outputDivergences").c_str());
