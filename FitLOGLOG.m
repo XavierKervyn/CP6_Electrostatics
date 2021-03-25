@@ -3,6 +3,6 @@ function FitLOGLOG(x,y,ordre)
     z  = polyval(P, log(x));
     loglog(x,exp(z),'--','Linewidth',1);
     legendStrings = string(P(1));
-    leg = legend(legendStrings,'Location','northeast','NumColumns',2);
+    leg = legend(legendStrings);
     title(leg, 'linear fit: slope')
 end

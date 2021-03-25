@@ -43,20 +43,16 @@ class Epsilonr {
 public:
   Epsilonr(bool const& trivial_, double const& b_, double const& c_, \
   double const& relative_epsilon_)
-    : b(b_), R(c_), trivial(trivial_), relative_epsilon(relative_epsilon_) {};
+    : trivial(trivial_), b(b_), R(c_),  relative_epsilon(relative_epsilon_) {};
 
   inline double operator()(double const& r, bool const& left) {
   // Le booleen "left" indique s'il faut prendre la limite a gauche ou a droite en cas de discontinuite
-  if(trivial)
-  return 1;
-  else{
-	if(left)
-    return 1.0;
-    else
-    return 4.0;
-  }
-
-  }
+double eps(1e-12*b);
+if(trivial or r<=b-eps or (abs(r-b)<=eps and left))
+  return 1.0;
+else
+  return relative_epsilon;
+}
 
 private:
   bool trivial=1;
@@ -71,19 +67,14 @@ public:
     : b(b_), a0(a0_), R(R_), trivial(trivial_) {};
 
   inline double operator()(double const& r) {
-
- if(trivial)
- return 1;
- else
- {
-	if(r<b)
-    return a0*sin(3*pi*r/b);
-
+    if(trivial)
+      return 1.0;
+    else if(r<b and !trivial)
+      return a0*sin(3*pi*r/b);
     else
-    return 0;
+      return 0;
   }
-  }
-
+// pourquoi avoir R en attribut ?
 private:
   double b, a0, R;
   bool trivial;
@@ -114,29 +105,52 @@ int main(int argc, char* argv[])
 
   // Discretisation du domaine :
   int N1 = configFile.get<int>("N1");
-  int N2 = configFile.get<int>("N2");
+  int N2;
   if(configFile.get<bool>("proportionalMesh")){
     // apply proportion
     N2 = (int)(configFile.get<double>("meshFactor")*((double)N1));
+  } else {
+    N2 = configFile.get<int>("N2");
   }
+  //Show the actual value of N2
+  cout << " N2=" << N2 << endl;
+
   //
-  // TODO: Int�gration mixte : p*trapeze+(1-p)*mid-point, voir Eq.(3.48) des notes de cours.
-  // Pour la r�gle des trap�zes vous aurez donc p=1.
-  // L'impl�mentation du sch�ma d'int�gration mixte est facultative.
+  // TODO: Intégration mixte : p*trapeze+(1-p)*mid-point, voir Eq.(3.48) des notes de cours.
+  // Pour la règle des trapèzes vous aurez donc p=1.
+  // L'implémentation du schéma d'intégration mixte est facultative.
   double p = configFile.get<double>("p");
   int ninters = N1 + N2;
   int npoints = N1 + N2 + 1;
-  vector<double> r(npoints,0);
-  vector<double> h(ninters,b/(N1));
 
+  /*vector<double> r(npoints,0);
+  vector<double> h(ninters,b/(N1));
   for(size_t k(N1); k<h.size();++k)
   {
-	  h[k] = (R-b)/(N2+1);
+	  h[k] = (R-b)/(N2);
   }
   for(size_t k(1); k<r.size(); ++k)
   {
 	  //r[k] = r[k-1] + h[k-1];
     r[k] = r[k-1] + h[k];
+  }*/
+
+  double h1 = b/N1;
+  double h2 = (R-b)/N2;
+
+  //Positions
+  vector<double> r(npoints);
+  for(int i(0); i<N1; ++i){
+    r[i] = i*h1;
+  }
+  for(int i(0); i<=N2; ++i){
+    r[N1+i] = b + i*h2;
+  }
+
+  //Ecartement entre deux cases
+  vector<double> h(ninters);
+  for(int i(0); i<ninters; ++i){
+    h[i] = r[i+1] - r[i];
   }
 
   vector<double> diag(npoints,0.);  // Diagonale
@@ -148,7 +162,7 @@ int main(int argc, char* argv[])
   // Boucle sur les intervalles (k)
   for(int k(0); k<ninters; ++k)
   {
-    // trapezoidal
+  // trapezoidal
 	double trap_kk = p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*pow(h[k],2));
 	//double trap_kplus1kplus1 = p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*pow(h[k+1],2));
 	double trap_kkplus1 = - p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*h[k]*h[k]);
@@ -157,6 +171,7 @@ int main(int argc, char* argv[])
 	//double mid_kplus1kplus1 = (1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*pow(h[k+1],2));
 	double mid_kkplus1 = -(1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*h[k]*h[k]);
     // Be careful, epsilonr has jumps at r=b, which is a grid point. Depending on
+
     diag[k] += trap_kk + mid_kk;
     diag[k+1] += trap_kk + mid_kk;
     //diag[k+1] += trap_kplus1kplus1 + mid_kplus1kplus1;
@@ -166,15 +181,28 @@ int main(int argc, char* argv[])
     rhs[k] += h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
     rhs[k+1] += h[k]*(p*r[k]*rho_lib(r[k+1])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
 
-    //rhs[k+1] = h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/2*rho_lib((r[k]+r[k+1])/2));
+  /*  double trap = 0.5*p*(epsilonr(r[k],false)*r[k] + epsilonr(r[k+1],true)*r[k+1])/h[k];
+    double mid  = 0.5*(1-p)*epsilonr(0.5*(r[k+1]+r[k]),false)*(r[k+1]+r[k])/h[k];
+
     // round-off errors we might fall on the 'wrong' side.
     // Call the See the boolean 'left'
+
+    diag[k] += trap + mid;
+    upper[k]-= trap + mid;
+    lower[k]-= trap + mid;
+
+    diag[k+1] += trap + mid;
+
+    rhs[k]   += 0.5*p*rho_lib(r[k])*r[k]*h[k] + 0.25*(1-p)*rho_lib(0.5*(r[k]+r[k+1]))*(r[k]+r[k+1])*h[k];
+  	rhs[k+1] += 0.5*p*rho_lib(r[k+1])*r[k+1]*h[k] + 0.25*(1-p)*rho_lib(0.5*(r[k]+r[k+1]))*(r[k]+r[k+1])*h[k];*/
   }
 
   // TODO: Condition au bord:
-   diag[diag.size()-1] = 1;
-   rhs[rhs.size()-1] = V0;
-   lower[lower.size()-1] = 0;
+   diag.back()  = 1.0;
+   rhs.back()   = V0;
+   lower.back() = 0.0;
+
+
   // Resolution:
   vector<double> phi(solve(diag,lower,upper,rhs));
 
@@ -193,9 +221,9 @@ int main(int argc, char* argv[])
   ofs.close();
 
   // 3. E_r et D_r/epsilon_0
-  // N.B.: On d�finira Dr comme �tant D_r/epsilon_0
+  // N.B.: On définira Dr comme étant D_r/epsilon_0
   vector<double> rmid(ninters);
-    for(size_t k(0); k<rmid.size(); ++k)
+    for(int k(0); k<ninters; ++k)
   {
 	  rmid[k] = (r[k] + r[k+1])/2;
   }
@@ -204,9 +232,9 @@ int main(int argc, char* argv[])
   for(int i(0); i<ninters; ++i)
   {
     // TODO: Calculer E_r et D_r/epsilon_0 aux milieux des intervalles
-    // en utilisant la repr�sentation en �l�ments finis
-    Er[i] = -(phi[i+1] - phi[i])/h[i];
-    Dr[i] = Er[i]*(epsilonr(rmid[i],rmid[i]<b));
+    // en utilisant la représentation en éléments finis
+    Er[i] = -(phi[i+1] - phi[i])/(r[i+1]-r[i]);
+    Dr[i] = Er[i]*(epsilonr(rmid[i],(rmid[i]<=b)));
   }
   ofs.open(\
   configFile.get<string>("outputElectricDisplacementFields").c_str());
@@ -217,19 +245,18 @@ int main(int argc, char* argv[])
 
   // 4. rho_lib, div(E_r) et div(D_r)/epsilon_0
   vector<double> rmidmid(ninters-1);
-  for(size_t k(0); k<rmidmid.size(); ++k)
+  for(int k(0); k<ninters-1; ++k)
   {
 	  rmidmid[k] = (rmid[k] + rmid[k+1])/2;
   }
   vector<double> div_Er(ninters-1);
   vector<double> div_Dr(ninters-1);
-  for(int i(1); i<=ninters-1; ++i)
+  for(int i(0); i < ninters-1; ++i) //à vérifier !!
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
-    // en utilisant des diff�rences finies centr�es aux milieux des milieux des intervalles
-	div_Er[i-1] = 1.0 / rmidmid[i-1] * ( ( rmid[i] * Er[i] - rmid[i-1] * Er[i-1] ) / ( rmid[i] - rmid[i-1] ) );
-  div_Dr[i-1] = 1.0 / rmidmid[i-1] * ( ( rmid[i] * Dr[i] - rmid[i-1] * Dr[i-1] ) / ( rmid[i] - rmid[i-1] ) );
-  //div_Dr[i]= 1/rmidmid[i] * (Dr[i] + rmidmid[i]* (Dr[i+1]-Dr[i])/(rmidmid[i+1]-rmidmid[i]));
+    // en utilisant des différences finies centrées aux milieux des milieux des intervalles
+	   div_Er[i] = 1.0 / rmidmid[i] * ( ( rmid[i+1] * Er[i+1] - rmid[i] * Er[i] ) / ( rmid[i+1] - rmid[i] ) );
+     div_Dr[i] = 1.0 / rmidmid[i] * ( ( rmid[i+1] * Dr[i+1] - rmid[i] * Dr[i] ) / ( rmid[i+1] - rmid[i] ) );
   }
   ofs.open(configFile.get<string>("outputDivergences").c_str());
   ofs.precision(15);

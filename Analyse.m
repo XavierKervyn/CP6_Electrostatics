@@ -46,7 +46,7 @@ set(gca,'fontsize',fs)
 figure
 hold on
 plot(rmidmid,rholib,'Linewidth',lw,'DisplayName',"$\rho_{lib} / \epsilon_0$")
-plot(rmidmid,divDr,'--','Linewidth',lw, DisplayName',"$(\nabla \cdot D_r) / \epsilon_0$")
+plot(rmidmid,divDr,'--','Linewidth',lw, 'DisplayName',"$(\nabla \cdot D_r) / \epsilon_0$")
 plot(rmidmid,divEr-divDr,'Linewidth',lw,'DisplayName',"$\rho_{pol} / \epsilon_0$")
 xlabel('$r$')
 ylabel("$\rho / \epsilon_0$ [V/m$^2$]")
