@@ -64,7 +64,38 @@ end
     grid on; hold on; set(gca,'fontsize',fs);
     steps = N(1:4:nsimul); legendStrings = [string(steps),"$\phi_{ana}$"];
     leg = legend(legendStrings,'Location','southwest','NumColumns',2);
-    title(leg, 'Steps $N$')  
+    title(leg, 'Steps $N$') 
+    
+    % create a new pair of axes inside current figure [.65 .175 .25 .25]
+    axes('position',[0.65 0.65 0.28 0.28])
+    box on % put box around new pair of axes
+for i=[13 17]
+    data    = load([filename2(i)+'_phi.out']);
+    r       = data(:,1);
+    indexOfInterest = (r < 0.1); % range of r near perturbation
+    phi     = data(:,2);
+    phi_ana = (R_^2 - r.^2)/4 + V0_; %solution analytique
+    plot(r(indexOfInterest),phi(indexOfInterest),'.','Linewidth',lw);
+    hold on
+end
+    %plot de la solution analytique, avec la range de la dernière simu
+    plot(r(indexOfInterest),phi_ana(indexOfInterest),'r--','Linewidth',lw) % plot on new axes
+    axis tight
+    
+figure('Name','plot superposé E & D')
+    i = 5;
+    data    = load([filename2(i)+'_E_D.out']);
+    r       = data(:,1);
+    E       = data(:,2);
+    D       = data(:,3);
+        plot(r,E,'+','Linewidth',lw);
+    hold on
+        plot(r,D,'x','Linewidth',lw);
+    xlabel('$r [m]$'); ylabel('$E_r, D_r/\varepsilon_0$ [V/m]');
+    grid on; hold on; set(gca,'fontsize',fs);
+    leg = legend('$E_r$','$D/\varepsilon_0$','Location','southeast','NumColumns',1);
+    title(leg,"$N=$ "+num2str(N(i)));
+
 %% Analyse de convergence sur phi_0
 
 phi_0 = (R_^2)/4 + V0_; %solution analytique

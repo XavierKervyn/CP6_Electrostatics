@@ -64,7 +64,40 @@ end
     grid on; hold on; set(gca,'fontsize',fs);
     steps = N(1:4:nsimul); legendStrings = [string(steps),"$\phi_{ana}$"];
     leg = legend(legendStrings,'Location','southwest','NumColumns',2);
-    title(leg, 'Steps $N$')  
+    title(leg, 'Steps $N$') 
+    
+    % create a new pair of axes inside current figure
+    axes('position',[.65 .175 .25 .25])
+    box on % put box around new pair of axes
+for i=1:4:nsimul
+    data    = load([filename2(i)+'_phi.out']);
+    r       = data(:,1);
+    indexOfInterest = (r < 0.3) & (r > 0.2); % range of t near perturbation
+    phi     = data(:,2);
+    phi_ana = (R_^2 - r.^2)/4 + V0_; %solution analytique
+    if (i !=1)
+        plot(r(indexOfInterest),phi(indexOfInterest),'.','Linewidth',lw);
+    end
+    hold on
+end
+    %plot de la solution analytique, avec la range de la dernière simu
+    plot(r(indexOfInterest),phi_ana(indexOfInterest),'r--','Linewidth',lw) % plot on new axes
+    axis tight
+    
+figure('Name','plot superposé E & D')
+    i = 5;
+    data    = load([filename2(i)+'_E_D.out']);
+    r       = data(:,1);
+    E       = data(:,2);
+    D       = data(:,3);
+        plot(r,E,'+','Linewidth',lw);
+    hold on
+        plot(r,D,'x','Linewidth',lw);
+    xlabel('$r [m]$'); ylabel('$E_r, D_r/\varepsilon_0$ [V/m]');
+    grid on; hold on; set(gca,'fontsize',fs);
+    leg = legend('$E_r$','$D/\varepsilon_0$','Location','southeast','NumColumns',1);
+    title(leg,"$N=$ "+num2str(N(i)));
+
 %% Analyse de convergence sur phi_0
 
 phi_0 = (R_^2)/4 + V0_; %solution analytique
@@ -296,30 +329,43 @@ for i=1:nsimul
     divD   = data(:,4);
     
     err = abs((rholib-divD)/a0_) * 100;
-    plot(r(N1_(i)+2:end-1), err(N1_(i)+2:end-1),'.');
+    plot(r(N1_(i)+3:end-1), err(N1_(i)+3:end-1),'.');
     xlabel('$1/N$'); ylabel('Rel. err. on $A$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
 
 % calcul de la densité de charges de polarisation
-% rho_pol = data(:,3) - divD;
-epsr    = zeros(length(r));
-for i=1:length(r)
-   if (r(i) < b_)
-       epsr(i) = 1;
-   else
-       epsr(i) = 4;
-   end
-end
-rho_pol = (1-epsr).*data(:,3);
+divE    = data(:,3);
+rho_pol = divE - divD;
+% epsr    = zeros(length(r));
+% for i=1:length(r)
+%    if (r(i) < b_)
+%        epsr(i) = 1;
+%    else
+%        epsr(i) = 4;
+%    end
+% end
+% rho_pol = (1-epsr).*data(:,3);
 
 figure('Name',"plot rho pol")
-    plot(r, rho_pol,'.','Linewidth',lw);
-    xlabel('$r$ [m]'); ylabel('$\rho_{pol} / \varepsilon_0 $ [V/m$^2$]');
-    grid minor; hold on; set(gca,'fontsize',fs);
-    
+        plot(r, rho_pol,'.','Linewidth',lw);
+    hold on
+%         plot(r, -3*divE,'.','Linewidth',lw)
+        xlabel('$r$ [m]'); ylabel('$\rho_{pol} / \varepsilon_0 $ [V/m$^2$]');
+        grid minor; hold on; set(gca,'fontsize',fs);
+
+figure('Name',"verification rho pol law avant b")
+    plot(r(3:N1_(i)-2), rho_pol(3:N1_(i)-2),'.');
+    xlabel('$r [m]$'); ylabel('$\rho_{pol}$ [V/m$^2$]');
+    grid on; set(gca,'fontsize',fs);
+
+figure('Name',"verification rho pol après b")
+    plot(r(N1_(i)+3:end-1), rho_pol(N1_(i)+3:end-1),'.');
+    xlabel('$r [m]$'); ylabel('$\rho_{pol}$ [V/m$^2$]');
+    grid on; set(gca,'fontsize',fs);      
+        
 figure('Name',"plot rho lib")
-    plot(r, rholib,'.','Linewidth',lw);
-    xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
-    grid minor; hold on; set(gca,'fontsize',fs);
+        plot(r, rholib,'.','Linewidth',lw);
+        xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
+        grid minor; hold on; set(gca,'fontsize',fs);
     
