@@ -1,5 +1,4 @@
 %% Paramètres: cas non trivial et question d.ii ///////////////////////////
-clear; clc
 ViewFormat;
 
 trivial_    = false;
@@ -10,9 +9,7 @@ epsilon_r_  = 4.e0;
 V0_         = 2.2e2 ;
 MeshFactor_ = 0.5;
 p_          = 1.e0;
-propMesh_   = ~trivial;
-nsimul      = 1; 
-N           = round(logspace(3,4,nsimul));
+propMesh_   = ~trivial_;
 
 N1_ = N; N2 = N;
 if (propMesh_)
@@ -41,7 +38,7 @@ for i=1:nsimul
     rholib = data(:,2);
     divD   = data(:,4);
     
-    plot(r, abs((rholib-divD)/a0_) * 100,'.');
+    plot(r, abs((rholib-divD)/a0_) * 100,'.-','Linewidth',lw);
     xlabel('$1/N$'); ylabel('Rel. err. on $A$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end

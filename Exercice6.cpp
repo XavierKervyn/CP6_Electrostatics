@@ -48,7 +48,7 @@ public:
   inline double operator()(double const& r, bool const& left) {
   // Le booleen "left" indique s'il faut prendre la limite a gauche ou a droite en cas de discontinuite
 double eps(1e-12*b);
-if(trivial or r<=b-eps or (abs(r-b)<=eps and left))
+if(trivial or r<b-eps or (abs(r-b)<=eps and left))
   return 1.0;
 else
   return relative_epsilon;
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     N2 = configFile.get<int>("N2");
   }
   //Show the actual value of N2
-  cout << " N2=" << N2 << endl;
+  //cout << " N2=" << N2 << endl;
 
   //
   // TODO: Intégration mixte : p*trapeze+(1-p)*mid-point, voir Eq.(3.48) des notes de cours.
@@ -149,9 +149,16 @@ int main(int argc, char* argv[])
 
   //Ecartement entre deux cases
   vector<double> h(ninters);
-  for(int i(0); i<ninters; ++i){
-    h[i] = r[i+1] - r[i];
+  h[0] = b/N1;
+  for(int i(1); i<ninters; ++i){
+    if(i<N1)
+    h[i] = b/N1;
+    else
+    h[i] = (R-b)/N2;
   }
+  /*for(int i(1); i<ninters; ++i){
+    h[i] = r[i] - r[i-1];
+  }*/
 
   vector<double> diag(npoints,0.);  // Diagonale
   vector<double> lower(ninters,0.); // Diagonale inferieure
