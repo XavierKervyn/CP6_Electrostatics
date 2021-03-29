@@ -1,19 +1,18 @@
 %% Cas Trivial
-clear all; clc
+clear; clc
 CasTrivial;
 
 %% Cas Non trivial
-clear all; clc
+clear; clc
 MeshFactor_ = 2;
 CasNonTrivial;
 
 %% Etude N1 vs N2
-clear all; clc
-nsimul  = 20;
-Ntotal  = round(logspace(2,3,nsimul)); 
+clear; clc
+nsimul  = 20; 
 MF = 5;
 printname = "N1=5N2";  MeshFactor_ = MF;   NonTrivialN1N2;
-printname = "N1=02N2"; MeshFactor_ = 1/MF; NonTrivialN1N2;
+% printname = "N1=02N2"; MeshFactor_ = 1/MF; NonTrivialN1N2;
 
 % Etude de convergence avec paramètre t
 Ntotal = 10000;
@@ -56,6 +55,10 @@ end
     xlabel("$t$"); ylabel('$\phi(r=b)$ [V]');
     grid minor; hold on; set(gca,'fontsize',fs);
 SaveIMG("PhiRBasymptotiqueMeshParamt");
+
+%% Surface N1//N2
+clear; clc;
+nsimul = 20; DessineSurface(nsimul);
 
 %% Question d.ii
 clear; clc

@@ -1,6 +1,6 @@
 %% Paramètres: cas non trivial avec facteur 2 /////////////////////////////
 ViewFormat;
-
+Ntotal  = round(logspace(1,2,nsimul));
 N1_ = MeshFactor_*(MeshFactor_ +1)*Ntotal;
 N2_ = 1/(MeshFactor_ +1)* Ntotal;
 trivial_    = false;
@@ -41,7 +41,7 @@ figure('Name','plot phi non trivial')
     steps = Ntotal(1:intervalle:nsimul); legendStrings = string(steps);
     leg = legend(legendStrings,'Location','southeast','NumColumns',2);
     title(leg, "$N_{tot}, N_1 =$" + num2str(MeshFactor_) +"$N_2$")
-SaveIMG("PhiNonTrivial"+printname);
+% SaveIMG("PhiNonTrivial"+printname);
     
 figure('Name','plot E non trivial')
     for i=1:intervalle:nsimul
@@ -54,11 +54,12 @@ figure('Name','plot E non trivial')
     xlabel('$r$ [m]'); ylabel('$E_r$ [V/m]');
     grid on; hold on; set(gca,'fontsize',fs);
     steps = Ntotal(1:intervalle:nsimul); legendStrings = string(steps);
-    leg = legend(legendStrings,'Location','southeast','NumColumns',1);
+    leg = legend(legendStrings,'Location','northeast','NumColumns',2);
     title(leg, "$N_{tot}$, $N_1 =$" + num2str(MeshFactor_) +"$N_2$")
-SaveIMG("ENonTrivial"+printname);
+% SaveIMG("ENonTrivial"+printname);
 
 %% Convergence de phi(r=b) pour différentes valeurs
+Ntotal  = round(logspace(3,4,nsimul));
 N1_ = MeshFactor_*(MeshFactor_ +1)*Ntotal;
 N2_ = 1/(MeshFactor_ +1)* Ntotal;
 trivial_    = false;
@@ -114,7 +115,7 @@ end
     title(leg, '$\phi_{as}$ [V]')
     xlabel("$1/N_{tot}$, $N_1 =$" + num2str(MeshFactor_) +"$N_2$"); ylabel('$\phi(r=b)$ [V]');
     grid minor; hold on; set(gca,'fontsize',fs);
-SaveIMG("PhiRBasymptotiqueMesh"+printname);
+% SaveIMG("PhiRBasymptotiqueMesh"+printname);
 
 figure('Name',"Convergence phi r b")
     FitLOGLOG(1./Ntotal,err,1);
@@ -123,6 +124,6 @@ figure('Name',"Convergence phi r b")
     xlabel("$1/N_{tot}$, $N_1 =$" + num2str(MeshFactor_) +"$N_2$"); ylabel('Rel. error on $\phi_{as}(r=b)$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
     legend('Location','northwest','Numcolumns',1);
-SaveIMG("ConvergencePhiRBasymptotiqueMesh"+printname);
+% SaveIMG("ConvergencePhiRBasymptotiqueMesh"+printname);
 
 
