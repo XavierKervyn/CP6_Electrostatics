@@ -27,8 +27,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in'); 
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in'); 
 end
 
 %% Plot du epsilon_r et rho_lib
@@ -45,7 +45,7 @@ figure('Name','plot e_r et rho_lib')
 
     yyaxis right
     plot(r, rho_lib,'Linewidth',lw);
-    ylabel('$\rho_{lib}/\varepsilon_0$ [V/m$^2$]');
+    ylabel('$\rho_{f}/\varepsilon_0$ [V/m$^2$]');
     ylim([min(rho_lib)-1000 max(rho_lib)+1000]);
     hold off
     grid on; hold on; set(gca,'fontsize',fs);
@@ -116,8 +116,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in'); 
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in'); 
 end
 
 figure('Name',"phi r b en fonction de 1./N")

@@ -167,44 +167,24 @@ int main(int argc, char* argv[])
 
   // TODO: Assemblage des elements de la matrice et du membre de droite
   // Boucle sur les intervalles (k)
-  for(int k(0); k<ninters; ++k)
+  for(int k(1); k<ninters; ++k)
   {
-  // trapezoidal
-	double trap_kk = p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*pow(h[k],2));
-	//double trap_kplus1kplus1 = p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*pow(h[k+1],2));
-	double trap_kkplus1 = - p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k+1]<b))/(2*h[k]*h[k]);
-    // mid-point
-	double mid_kk = (1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*pow(h[k],2));
-	//double mid_kplus1kplus1 = (1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*pow(h[k+1],2));
-	double mid_kkplus1 = -(1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*h[k]*h[k]);
-    // Be careful, epsilonr has jumps at r=b, which is a grid point. Depending on
+    double Akk      = h[k-1]*(   0.5*p*(r[k-1]*epsilonr(r[k-1],r[k-1]<b)*1/pow(h[k-1],2) + r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k-1],2))
+                              + (1-p)*( (r[k-1]+r[k])/2 * epsilonr((r[k-1]+r[k])/2,(r[k-1]+r[k])/2 < b) * 1/pow(h[k-1],2) ) )         //alpha
+                    + h[k] * ( 0.5*p*(r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k],2) + r[k+1]*epsilonr(r[k+1],r[k+1]<b)*1/pow(h[k],2) )
+                              + (1-p) * ((r[k]+r[k+1])/2 * epsilonr((r[k]+r[k+1])/2, (r[k]+r[k+1])/2 < b) * 1/pow(h[k],2)  )   ) ;    //beta
 
-    diag[k] += trap_kk + mid_kk;
-    diag[k+1] += trap_kk + mid_kk;
-    //diag[k+1] += trap_kplus1kplus1 + mid_kplus1kplus1;
-    lower[k] += trap_kkplus1 + mid_kkplus1;
-    upper[k] += lower[k];
+    double Akkplus1 = - h[k]* (0.5*p*(r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k],2) + r[k+1]*epsilonr(r[k+1],r[k+1]<b)*1/pow(h[k],2))
+                              + (1-p)*((r[k]+r[k+1])/2 * epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)*1/pow(h[k],2))  );
 
-    rhs[k] += h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
-    rhs[k+1] += h[k]*(p*r[k]*rho_lib(r[k+1])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
-
-  /*  double trap = 0.5*p*(epsilonr(r[k],false)*r[k] + epsilonr(r[k+1],true)*r[k+1])/h[k];
-    double mid  = 0.5*(1-p)*epsilonr(0.5*(r[k+1]+r[k]),false)*(r[k+1]+r[k])/h[k];
-
-    // round-off errors we might fall on the 'wrong' side.
-    // Call the See the boolean 'left'
-
-    diag[k] += trap + mid;
-    upper[k]-= trap + mid;
-    lower[k]-= trap + mid;
-
-    diag[k+1] += trap + mid;
-
-    rhs[k]   += 0.5*p*rho_lib(r[k])*r[k]*h[k] + 0.25*(1-p)*rho_lib(0.5*(r[k]+r[k+1]))*(r[k]+r[k+1])*h[k];
-  	rhs[k+1] += 0.5*p*rho_lib(r[k+1])*r[k+1]*h[k] + 0.25*(1-p)*rho_lib(0.5*(r[k]+r[k+1]))*(r[k]+r[k+1])*h[k];*/
+    diag[k]   = Akk;
+    lower[k]  = Akkplus1;
+    upper[k]  = lower[k];
+    rhs[k]    = h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
   }
 
   // TODO: Condition au bord:
+   diag[0]      = 1.;
    diag.back()  = 1.0;
    rhs.back()   = V0;
    lower.back() = 0.0;

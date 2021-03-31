@@ -4,7 +4,17 @@ N2_grid = linspace(100,1000,nsimul);
 [X, Y]  = meshgrid(N1_grid,N2_grid);
 
 N1_ = N1_grid; N2_ = N2_grid;
+ViewFormat;
 
+trivial_    = false;
+b_          = 3.e-1 ;
+R_          = 5.e-1;
+a0_         = -3.e4;
+epsilon_r_  = 4.e0;
+V0_         = 2.2e2 ;
+MeshFactor_ = 0;
+p_          = 1.e0;
+propMesh_   = false;
 
 filename2 = strings;
 for i = 1:nsimul

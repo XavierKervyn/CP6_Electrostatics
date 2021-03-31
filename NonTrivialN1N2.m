@@ -22,8 +22,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in'); 
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in'); 
 end
 
 %% Plot phi et E pour différentes valeurs de N (cas non trivial)
@@ -81,8 +81,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in'); 
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in'); 
 end
 
 figure('Name',"phi r b en fonction de 1./N")

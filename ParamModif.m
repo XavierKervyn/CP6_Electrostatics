@@ -30,8 +30,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in'); 
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in'); 
 end
 
 figure('Name','plot param t')

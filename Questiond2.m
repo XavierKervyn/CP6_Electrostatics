@@ -101,5 +101,5 @@ figure('Name',"verification rho pol après b")
         
 figure('Name',"plot rho lib")
         plot(r, rholib,'.','Linewidth',lw);
-        xlabel('$r$ [m]'); ylabel('$\rho_{lib} / \varepsilon_0 $ [V/m$^2$]');
+        xlabel('$r$ [m]'); ylabel('$\rho_{f} / \varepsilon_0 $ [V/m$^2$]');
         grid minor; hold on; set(gca,'fontsize',fs);

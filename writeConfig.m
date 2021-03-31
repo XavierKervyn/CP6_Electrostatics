@@ -1,5 +1,5 @@
 %va écrire le configuration_.in
-filename = 'configuration_.in';
+filename = 'configuration.in';
 fid = fopen(filename,'wt'); 
 
 %Paramètres physiques:

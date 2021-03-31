@@ -1,0 +1,15 @@
+trivial=1
+b=0.3
+R=0.5
+a0=-30000
+epsilon_r=4
+V0=220
+proportionalMesh=0
+meshFactor=0
+N1=62
+N2=62
+p=1
+outputDataProfiles= N1_62N2_62_dataprof.out
+outputPotential = N1_62N2_62_phi.out
+outputElectricDisplacementFields = N1_62N2_62_E_D.out
+outputDivergences = N1_62N2_62_div_E_D.out

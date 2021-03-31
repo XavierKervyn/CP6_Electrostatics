@@ -29,8 +29,8 @@ for i = 1:nsimul
     N1_loc = N1_(i);
     N2_loc = N2_(i);
     writeConfig;
-    disp('Exercice6 configuration_.in');   
-    system('Exercice6 configuration_.in');
+    disp('Exercice6 configuration.in');   
+    system('Exercice6 configuration.in');
 end
 
 %% Analyse 1: plot de tous les graphes
@@ -57,8 +57,8 @@ end
     title(leg, '$N$')
     xlim([r(1) r(end)]);
     ylim([min(phi_ana) max(phi_ana)]);
-    MagInset(h1, -1, [0.0 0.03 220.0623 max(phi_ana)], [0.062 0.23 220.025 220.045], {'NW','NW';'NE','NE'});
-%     set(gca,'fontsize',fs);
+    MagInset(h1, -1, [0.0 0.03 220.0623 max(phi_ana)], [0.12 0.25 220.025 220.04], {'NW','NW';'NE','NE'});
+    set(gca,'fontsize',fs-4);
 SaveIMG('ComparaisonQualitativePhiTrivial');
     
 h1 = figure('Name','plot superposé E & D');
