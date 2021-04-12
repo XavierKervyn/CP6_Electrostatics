@@ -3,7 +3,7 @@ clear; clc
 ViewFormat;
 
 nsimul      = 20; 
-N           = round(logspace(1,4,nsimul));
+N           = round(logspace(1,3,nsimul));
 trivial_    = true;
 b_          = 3.e-1 ;
 R_          = 5.e-1;
@@ -57,24 +57,24 @@ end
     title(leg, '$N$')
     xlim([r(1) r(end)]);
     ylim([min(phi_ana) max(phi_ana)]);
-    MagInset(h1, -1, [0.0 0.03 220.0623 max(phi_ana)], [0.12 0.25 220.025 220.04], {'NW','NW';'NE','NE'});
+    MagInset(h1, -1, [0.0 0.015 220.06245 max(phi_ana)], [0.12 0.25 220.025 220.04], {'NW','NW';'NE','NE'});
     set(gca,'fontsize',fs-4);
 SaveIMG('ComparaisonQualitativePhiTrivial');
     
-h1 = figure('Name','plot superposé E & D');
-    i = 4;
-    data    = load(filename2(i)+'_E_D.out');
-    r       = data(:,1);
-    E       = data(:,2);
-    D       = data(:,3);
-        plot(r,E,'+','Linewidth',lw);
-    hold on
-        plot(r,D,'x','Linewidth',lw);
-    xlabel('$r$ [m]'); ylabel('$E_r, D_r/\varepsilon_0$ [V/m]');
-    grid on; hold on; set(gca,'fontsize',fs);
-    leg = legend('$E_r$','$D/\varepsilon_0$','Location','southeast','NumColumns',1);
-    title(leg,"$N=$ "+num2str(N(i)));
-SaveIMG("ComparaisonQualitativeEDTrivial");
+% h1 = figure('Name','plot superposé E & D');
+%     i = 4;
+%     data    = load(filename2(i)+'_E_D.out');
+%     r       = data(:,1);
+%     E       = data(:,2);
+%     D       = data(:,3);
+%         plot(r,E,'+','Linewidth',lw);
+%     hold on
+%         plot(r,D,'x','Linewidth',lw);
+%     xlabel('$r$ [m]'); ylabel('$E_r, D_r/\varepsilon_0$ [V/m]');
+%     grid on; hold on; set(gca,'fontsize',fs);
+%     leg = legend('$E_r$','$D/\varepsilon_0$','Location','southeast','NumColumns',1);
+%     title(leg,"$N=$ "+num2str(N(i)));
+% SaveIMG("ComparaisonQualitativeEDTrivial");
 
 %% Analyse de convergence sur phi_0
 phi_0 = (R_^2)/4 + V0_; %solution analytique
@@ -87,7 +87,7 @@ for i=1:nsimul
     Errphi(1,i) = abs(phi(1)-phi_0)/phi_0 *100;
 end
     loglog(N, Errphi ,'x','Linewidth',lw,'HandleVisibility','off');
-    xlabel('$N$'); ylabel('Relative error on $\phi(0)$ [\%]');
+    xlabel('$N$'); ylabel('$\chi_0$ [\%]');
     grid on; hold on; set(gca,'fontsize',fs);
     FitLOGLOG(N,Errphi,1);
     legend('Location','northeast','Numcolumns',2);

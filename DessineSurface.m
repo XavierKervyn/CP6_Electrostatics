@@ -29,8 +29,8 @@ for i = 1:nsimul
         N1_loc = N1_(i);
         N2_loc = N2_(j);
         writeConfig;
-        disp('Exercice6 configuration_.in');   
-        system('Exercice6 configuration_.in');
+        disp('Exercice6 configuration.in');   
+        system('Exercice6 configuration.in');
     end
 end
 
@@ -48,7 +48,7 @@ end
     s1 = surf(X,Y,phirb);
     xlabel('$N_2$');
     ylabel('$N_1$');
-    zlabel('Rel. error on $\phi_{as}(r=b)$ [\%]');
+    zlabel('$\chi_b$ [\%]');
     colormap autumn
     view(-130,35);
     s1.FaceColor = 'interp';

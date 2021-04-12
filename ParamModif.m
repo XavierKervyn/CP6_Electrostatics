@@ -12,10 +12,11 @@ clear; clc
 nsimul  = 20; 
 MF = 5;
 printname = "N1=5N2";  MeshFactor_ = MF;   NonTrivialN1N2;
-% printname = "N1=02N2"; MeshFactor_ = 1/MF; NonTrivialN1N2;
+printname = "N1=02N2"; MeshFactor_ = 1/MF; NonTrivialN1N2;
 
-% Etude de convergence avec paramètre t
-Ntotal = 10000;
+%% Etude de convergence avec paramètre t
+clear; clc
+Ntotal = 1000;
 tmin = 0.5; tmax = 0.99;
 t = linspace(tmin,tmax,nsimul);
 N1_ = t*Ntotal; N2_ = (1-t)*Ntotal;
@@ -61,7 +62,7 @@ clear; clc;
 nsimul = 20; DessineSurface(nsimul);
 
 %% Question d.ii
-clear; clc
-nsimul = 10;
+clear all; clc
+nsimul = 20;
 N = round(logspace(1,3,nsimul));
 Questiond2;

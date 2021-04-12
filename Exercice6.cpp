@@ -29,8 +29,7 @@ vector<T> solve(vector<T> const& diag,
 
   for(int i(diag.size()-2); i>=0; --i)
     solution[i] = (new_rhs[i] - upper[i]*solution[i+1]) / new_diag[i];
-
-  return solution;
+    return solution;
 }
 
 bool if_left(double const& r,double const& b)
@@ -74,7 +73,7 @@ public:
     else
       return 0;
   }
-// pourquoi avoir R en attribut ?
+
 private:
   double b, a0, R;
   bool trivial;
@@ -123,18 +122,6 @@ int main(int argc, char* argv[])
   int ninters = N1 + N2;
   int npoints = N1 + N2 + 1;
 
-  /*vector<double> r(npoints,0);
-  vector<double> h(ninters,b/(N1));
-  for(size_t k(N1); k<h.size();++k)
-  {
-	  h[k] = (R-b)/(N2);
-  }
-  for(size_t k(1); k<r.size(); ++k)
-  {
-	  //r[k] = r[k-1] + h[k-1];
-    r[k] = r[k-1] + h[k];
-  }*/
-
   double h1 = b/N1;
   double h2 = (R-b)/N2;
 
@@ -150,15 +137,15 @@ int main(int argc, char* argv[])
   //Ecartement entre deux cases
   vector<double> h(ninters);
   h[0] = b/N1;
-  for(int i(1); i<ninters; ++i){
+  /*for(int i(1); i<ninters; ++i){
     if(i<N1)
     h[i] = b/N1;
     else
     h[i] = (R-b)/N2;
-  }
-  /*for(int i(1); i<ninters; ++i){
-    h[i] = r[i] - r[i-1];
   }*/
+  for(int i(0); i<ninters; ++i){
+    h[i] = r[i+1] - r[i];
+  }
 
   vector<double> diag(npoints,0.);  // Diagonale
   vector<double> lower(ninters,0.); // Diagonale inferieure
@@ -167,28 +154,63 @@ int main(int argc, char* argv[])
 
   // TODO: Assemblage des elements de la matrice et du membre de droite
   // Boucle sur les intervalles (k)
-  for(int k(1); k<ninters; ++k)
-  {
-    double Akk      = h[k-1]*(   0.5*p*(r[k-1]*epsilonr(r[k-1],r[k-1]<b)*1/pow(h[k-1],2) + r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k-1],2))
-                              + (1-p)*( (r[k-1]+r[k])/2 * epsilonr((r[k-1]+r[k])/2,(r[k-1]+r[k])/2 < b) * 1/pow(h[k-1],2) ) )         //alpha
-                    + h[k] * ( 0.5*p*(r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k],2) + r[k+1]*epsilonr(r[k+1],r[k+1]<b)*1/pow(h[k],2) )
-                              + (1-p) * ((r[k]+r[k+1])/2 * epsilonr((r[k]+r[k+1])/2, (r[k]+r[k+1])/2 < b) * 1/pow(h[k],2)  )   ) ;    //beta
 
-    double Akkplus1 = - h[k]* (0.5*p*(r[k]*epsilonr(r[k],r[k]<b)*1/pow(h[k],2) + r[k+1]*epsilonr(r[k+1],r[k+1]<b)*1/pow(h[k],2))
-                              + (1-p)*((r[k]+r[k+1])/2 * epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)*1/pow(h[k],2))  );
+// essai de la méthode d'implémentation directe
+/*  for(int k(1); k<ninters; ++k)
+  {
+    double Akk      = h[k-1]*(   0.5*p*(r[k-1]*epsilonr(r[k-1],false)*1./pow(h[k-1],2) + r[k]  *epsilonr(r[k],false)*1./pow(h[k-1],2))
+                              + (1-p) * ((r[k-1]+r[k])/2. * epsilonr((r[k-1]+r[k])/2,false) * 1./pow(h[k-1],2) ) )         //alpha
+
+                    + h[k] * (   0.5*p*(r[k]  *epsilonr(r[k], false)  *1./pow(h[k]  ,2) + r[k+1]*epsilonr(r[k+1],true)*1./pow(h[k]  ,2))
+                              + (1-p) * (0.5*(r[k]+r[k+1])* epsilonr((r[k]+r[k+1])/2.,false) * 1./pow(h[k],  2) ) ) ;    //beta
+
+    double Akkplus1 = - h[k]* (0.5*p*(r[k]*epsilonr(r[k],false)*1./pow(h[k],2) + r[k+1]*epsilonr(r[k+1],true)*1./pow(h[k],2))
+                    + (1-p)*((r[k]+r[k+1])/2. * epsilonr((r[k]+r[k+1])/2.,false)*1./pow(h[k],2))  );
 
     diag[k]   = Akk;
     lower[k]  = Akkplus1;
     upper[k]  = lower[k];
-    rhs[k]    = h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
+    rhs[k]    = h[k-1]*(0.5*p*(r[k]*rho_lib(r[k])) + (1-p)*(r[k]+r[k+1])/2.*0.5*rho_lib((r[k]+r[k+1])/2.)  )   //gamma
+              + h[k]  *(0.5*p*(r[k]*rho_lib(r[k])) + (1-p)*(r[k]+r[k+1])/2.*0.5*rho_lib((r[k]+r[k+1])/2.)  );  //delta
   }
 
   // TODO: Condition au bord:
-   diag[0]      = 1.;
+   diag[0]      = h[0] * ( 0.5*p*(r[0]*epsilonr(r[0],false)*1./pow(h[0],2) + r[1]*epsilonr(r[1],false)*1./pow(h[0],2) )
+                + (1-p) * ((r[0]+r[1])/2. * epsilonr((r[0]+r[1])/2.,false) * 1./pow(h[0],2)  )   ) ;    //beta
    diag.back()  = 1.0;
+   rhs[0]       = h[0]*  (0.5*p*(r[0]*rho_lib(r[0])) + (1-p)*(r[0]+r[1])/2.*0.5*rho_lib((r[0]+r[1])/2.)  ); //delta
    rhs.back()   = V0;
-   lower.back() = 0.0;
+   lower.back() = 0.0;*/
 
+//méthode d'implémentation itérative
+for(int k(0); k<ninters; ++k)
+  {
+    // trapezoidal
+    double trap_kk = p*h[k]*(r[k]*epsilonr(r[k],false)+r[k+1]*epsilonr(r[k+1],true))/(2*pow(h[k],2));
+    //double trap_kplus1kplus1 = p*h[k]*(r[k]*epsilonr(r[k],r[k]<b)+r[k+1]*epsilonr(r[k+1],r[k]<b))/(2*pow(h[k],2));
+    double trap_kkplus1 = - p*(r[k]*epsilonr(r[k],false)+r[k+1]*epsilonr(r[k+1],true))/(2*h[k]);
+    // mid-point
+    double mid_kk = (1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,false)/(2*pow(h[k],2));
+    //double mid_kplus1kplus1 = (1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,(r[k]+r[k+1])/2<b)/(2*pow(h[k+1],2));
+    double mid_kkplus1 = -(1-p)*h[k]*(r[k]+r[k+1])*epsilonr((r[k]+r[k+1])/2,false)/(2*h[k]*h[k]);
+    // Be careful, epsilonr has jumps at r=b, which is a grid point. Depending on
+    diag[k] += trap_kk + mid_kk;
+    diag[k+1] += trap_kk + mid_kk;
+    //diag[k+1] += trap_kplus1kplus1 + mid_kplus1kplus1;
+    lower[k] += trap_kkplus1 + mid_kkplus1;
+    upper[k] += lower[k];
+
+    rhs[k] += h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
+    rhs[k+1] += h[k]*(p*r[k+1]*rho_lib(r[k+1])/2+(1-p)*(r[k] + r[k+1])/4*rho_lib((r[k]+r[k+1])/2));
+    //rhs[k+1] = h[k]*(p*r[k]*rho_lib(r[k])/2+(1-p)*(r[k] + r[k+1])/2*rho_lib((r[k]+r[k+1])/2));
+    // round-off errors we might fall on the 'wrong' side.
+    // Call the See the boolean 'left'
+  }
+
+  // TODO: Condition au bord:
+   diag[diag.size()-1] = 1;
+   rhs[rhs.size()-1] = V0;
+   lower[lower.size()-1] = 0;
 
   // Resolution:
   vector<double> phi(solve(diag,lower,upper,rhs));
@@ -238,7 +260,7 @@ int main(int argc, char* argv[])
   }
   vector<double> div_Er(ninters-1);
   vector<double> div_Dr(ninters-1);
-  for(int i(0); i < ninters-1; ++i) //à vérifier !!
+  for(int i(0); i < ninters-1; ++i)
   {
     // TODO: Calculer div(E_r) et div(D_r)/epsilon_0
     // en utilisant des différences finies centrées aux milieux des milieux des intervalles
