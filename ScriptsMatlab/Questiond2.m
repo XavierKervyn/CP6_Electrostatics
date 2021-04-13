@@ -53,10 +53,13 @@ for i=1:intervalle:nsimul
     
     plot(r, abs((rholib-divD)/a0_) * 100,'.-','Linewidth',lw);
     hold on
-    xlabel('$r$ [m]'); ylabel('Rel. err. on $A$ [\%]');
+    xlabel('$r$ [m]'); ylabel('$\chi_d$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 end
-    steps = N(1:intervalles:end);
+    steps = N(1:intervalle:nsimul);
+    legendStrings = [string(steps),"$N$"];
+    leg = legend(legendStrings,'Location','northwest','NumColumns',2);
+    title(leg, '$N$')
 SaveIMG('VerificationGaussLaw');
 
 %étude de convergence sur le max de la différence
@@ -70,7 +73,7 @@ for i=1:nsimul
     MaxDiff(i) = max(abs((rholib-divD)/a0_) * 100);
 end
     plot(1./N,MaxDiff,'x','Linewidth',lw);
-    xlabel('$1/N$'); ylabel('Rel. err. on max($A$) [\%]');
+    xlabel('$1/N$'); ylabel('Max($\chi_d$) [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
     absc = (1./N);
     P = polyfit(absc,MaxDiff,1);
@@ -80,8 +83,9 @@ end
 SaveIMG('ConvergenceGaussLaw');
 
 % calcul de la densité de charges de polarisation
-h1 = figure('Name',"plot rho pol")
-for i=1:nsimul
+h1 = figure('Name',"plot rho pol");
+intervalle = 2;
+for i=1:intervalle:nsimul
     data   = load(filename2(i)+'_div_E_D.out');
     r      = data(:,1);
     divE    = data(:,3);
@@ -93,14 +97,20 @@ for i=1:nsimul
 end
     xlabel('$r$ [m]'); ylabel('$\rho_{b} / \varepsilon_0 $ [V/m$^2$]');
     grid minor; hold on; set(gca,'fontsize',fs);
-    
+    steps = N(1:intervalle:nsimul);
+    legendStrings = [string(steps),"$N$"];
+    leg = legend(legendStrings,'Location','northeast','NumColumns',2);
+    title(leg, '$N$')
     xlim([r(1) r(end)]);
     ylim([min(rho_pol) max(rho_pol)]);
-    MagInset(h1, -1, [0.27 0.33 0 15e4], [0.05 0.25 1.5e6 2.5e6], {'NW','SW';'NE','SE'});
+    MagInset(h1, -1, [0.27 0.33 0 15e4], [0.05 0.25 1.e6 2.e6], {'NW','SW';'NE','SE'});
     set(gca,'fontsize',fs-4);
 SaveIMG('plotRhoPol');
         
 figure('Name',"plot rho lib")
+    data   = load(filename2(nsimul)+'_div_E_D.out');
+    r      = data(:,1);
+    rholib = data(:,2);
     plot(r, rholib,'.','Linewidth',lw);
     xlabel('$r$ [m]'); ylabel('$\rho_{f} / \varepsilon_0 $ [V/m$^2$]');
     grid minor; hold on; set(gca,'fontsize',fs);
@@ -158,6 +168,6 @@ for i=length(MF):length(MF)
 end
     hold on
     FitLOGLOG(N1_+N2_(i,:),abs(Qpol-QpolAna)/QpolAna * 100,1);
-    xlabel('$N_{total}$'); ylabel('Rel. error on $Q_{b,ana}/L_z$ [\%]');
+    xlabel('$N_{total}$'); ylabel('$\chi_q$ [\%]');
     grid minor; hold on; set(gca,'fontsize',fs);
 SaveIMG("ConvergenceQpolMesh=05");
